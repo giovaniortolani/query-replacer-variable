@@ -1,4 +1,6 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: ff4a04d3fb76f850875bab567129c4354e53a5dd
+    changeNotes: Passing query string key-value pair to encodeUriComponent before building the URL.
   - sha: 1e7d672aac990a4f9d293b2e6d81d5e60176a7b6
     changeNotes: Initial release.
