@@ -19,9 +19,9 @@ for (let i = 0; i < qArr.length; i++) {
 
   for (let j = 0; j < modTable.length; j++) {
     if (tmp[0] === modTable[j].cusName) {
-      res = modTable[j].utmName + '=' + tmp[1];
+      res = encodeUriComponent(modTable[j].utmName) + '=' + encodeUriComponent(tmp[1]);
       break;
-    } else res = qArr[i];
+    } else res = encodeUriComponent(tmp[0]) + '=' + encodeUriComponent(tmp[1]);
   }
 
   resQueryArr.push(res);

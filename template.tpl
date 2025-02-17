@@ -1,12 +1,4 @@
-___TERMS_OF_SERVICE___
-
-By creating or modifying this file you agree to Google Tag Manager's Community
-Template Gallery Developer Terms of Service available at
-https://developers.google.com/tag-manager/gallery-tos (or such other URL as
-Google may provide), as modified from time to time.
-
-
-___INFO___
+﻿___INFO___
 
 {
   "type": "MACRO",
@@ -68,7 +60,7 @@ const getEventData = require('getEventData');
 const decodeUriComponent = require('decodeUriComponent');
 const encodeUriComponent = require('encodeUriComponent');
 
-const modTable = data.customParams; 
+const modTable = data.customParams;
 const pageLocation = decodeUriComponent(getEventData('page_location'));
 
 let resQueryArr = [];
@@ -82,14 +74,14 @@ let qArr = splitUrl[1].split('&');
 for (let i = 0; i < qArr.length; i++) {
   let res;
   let tmp = qArr[i].split('=');
-  
+
   for (let j = 0; j < modTable.length; j++) {
     if (tmp[0] === modTable[j].cusName) {
-      res = modTable[j].utmName + '=' + tmp[1];
+      res = encodeUriComponent(modTable[j].utmName) + '=' + encodeUriComponent(tmp[1]);
       break;
-    } else res = qArr[i];
+    } else res = encodeUriComponent(tmp[0]) + '=' + encodeUriComponent(tmp[1]);
   }
-  
+
   resQueryArr.push(res);
 }
 
@@ -137,12 +129,70 @@ ___SERVER_PERMISSIONS___
 
 ___TESTS___
 
-scenarios: []
-setup: ''
+scenarios:
+- name: URL without parameters
+  code: |-
+    const decodeUriComponent = require('decodeUriComponent');
+
+    const mockData = {
+      customParams: [
+        { cusName: 'this', utmName: 'that' },
+        { cusName: 'foo', utmName: 'bar' },
+      ]
+    };
+
+    mock('getEventData', (key) => {
+      if (key === 'page_location') return page_location_without_query_params;
+    });
+
+    let variableResult = runCode(mockData);
+
+    assertThat(variableResult).isEqualTo(page_location_without_query_params);
+- name: URL with parameters and no modification
+  code: |-
+    const decodeUriComponent = require('decodeUriComponent');
+
+    const mockData = {
+      customParams: [
+        { cusName: 'this', utmName: 'that' },
+        { cusName: 'foo', utmName: 'bar' },
+      ]
+    };
+
+    mock('getEventData', (key) => {
+      if (key === 'page_location') return page_location_with_query_params;
+    });
+
+    let variableResult = runCode(mockData);
+
+    assertThat(variableResult).isEqualTo(page_location_with_query_params);
+- name: URL with parameters and with modification
+  code: |+
+    const decodeUriComponent = require('decodeUriComponent');
+
+    const mockData = {
+      customParams: [
+        { cusName: 'oneparam', utmName: 'new_one_param' },
+        { cusName: 'teste', utmName: 'new_teste' },
+        { cusName: 'parâmetro', utmName: 'testão' },
+      ]
+    };
+
+    mock('getEventData', (key) => {
+      if (key === 'page_location') return page_location_with_query_params;
+    });
+
+    let variableResult = runCode(mockData);
+
+    assertThat(variableResult).contains('new_teste=123');
+    assertThat(variableResult).contains('new_one_param=1%202%203%204');
+    assertThat(variableResult).contains('test%C3%A3o=%C3%A7%C3%A3o');
+
+setup: |
+  const page_location_without_query_params = 'https://example.com/?';
+  const page_location_with_query_params = 'https://example.com/?oneparam=1%202%203%204&teste=123&anotherparam=hahsdhasd&par%C3%A2metro=%C3%A7%C3%A3o';
 
 
 ___NOTES___
 
 Created on 26/11/2024, 13:54:56
-
-
