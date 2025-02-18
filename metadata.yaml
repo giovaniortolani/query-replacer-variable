@@ -1,4 +1,6 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: a6731881245570a9c2a6ff6cfb37701b8a671dce
+    changeNotes: Code refactoring and some bugs fixed (encoding the resulting query parameters and handling '?' characters).
   - sha: 1e7d672aac990a4f9d293b2e6d81d5e60176a7b6
     changeNotes: Initial release.
