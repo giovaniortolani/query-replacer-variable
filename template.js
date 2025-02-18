@@ -1,30 +1,24 @@
 const getEventData = require('getEventData');
 const decodeUriComponent = require('decodeUriComponent');
 const encodeUriComponent = require('encodeUriComponent');
+const parseUrl = require('parseUrl');
+const makeTableMap = require('makeTableMap');
 
-const modTable = data.customParams;
-const pageLocation = decodeUriComponent(getEventData('page_location'));
+const pageLocation = getEventData('page_location');
+const parsedUrl = parseUrl(pageLocation);
 
-let resQueryArr = [];
+if (!parsedUrl.search) return pageLocation;
 
-let splitUrl = pageLocation.split('?');
+const fromTo = makeTableMap(data.customParams, 'from', 'to');
 
-if (!splitUrl[1]) return pageLocation;
+const searchParams = parsedUrl.searchParams;
+const newSearchParams = [];
 
-let qArr = splitUrl[1].split('&');
-
-for (let i = 0; i < qArr.length; i++) {
-  let res;
-  let tmp = qArr[i].split('=');
-
-  for (let j = 0; j < modTable.length; j++) {
-    if (tmp[0] === modTable[j].cusName) {
-      res = modTable[j].utmName + '=' + tmp[1];
-      break;
-    } else res = qArr[i];
-  }
-
-  resQueryArr.push(res);
+// 'key' is always decoded.
+for (let key in searchParams) {
+  const value = searchParams[key];
+  const newKey = decodeUriComponent(fromTo[key] || fromTo[encodeUriComponent(key)] || ''); // If the person added it either decoded or encoded.
+  newSearchParams.push(encodeUriComponent(newKey ? newKey : key) + '=' + encodeUriComponent(value));
 }
 
-return splitUrl[0] + '?' + resQueryArr.join('&');
+return parsedUrl.origin + parsedUrl.pathname + '?' + newSearchParams.join('&') + (parsedUrl.hash ? parsedUrl.hash : '');
