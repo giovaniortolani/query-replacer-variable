@@ -1,4 +1,6 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 782b9c5e5b221b3c286e3ca5379a5566fa2f5b67
+    changeNotes: Code refactoring, better parsing of input string and output result. Added some tests.
   - sha: 1e7d672aac990a4f9d293b2e6d81d5e60176a7b6
     changeNotes: Initial release.
